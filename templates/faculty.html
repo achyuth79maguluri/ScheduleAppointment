@@ -1,0 +1,134 @@
+{% extends 'common_teacher.html' %}
+
+{% block common_teacher %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style1.css' %}">
+   <div class="student">
+           <div class="container">
+          <div class="row min-height">
+              <div class="col-sm-12">
+                             
+                            <div class="row main_boder">
+                                <div class="col-sm-7">
+                                     <h3 class="appointmnet_list">My Appointments</h3>
+                                </div>
+                                <div class="col-sm-5">
+                                      <form class="form-inline my-2 my-lg-0" method="GET" action="">
+                                          <input class="form-control mr-sm-2" type="text" name="q" placeholder="Search By Date" placeholder="Search With Name" aria-label="Search">
+                                          <button class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Search">Search</button>
+                                       </form>
+
+                                </div>
+ 
+                            </div>
+                            <br>
+                             
+                            <table class="table">
+                              <thead>
+                                 <tr>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Time</th>
+                                    <th scope="col">Category</th>
+                                    <th scope="col">Topics</th>
+                                    <th scope="col">Appointment With</th>
+                                    <th scope="col">Reason</th>
+                                    <th scope="col">Room Number & Place</th>
+                                    <th scope="col">Faculty Comments</th>                  
+                                    <th scope="col">Status</th>
+                                 </tr>
+                              </thead>
+                              {% for appoint in query %}
+                              
+                              <tbody>
+                                 <tr>
+                                    <td>{{appoint.date}}</td>
+                                    <td>{{appoint.time_start}} - {{appoint.time_end}}</td>
+                                    <td>{{appoint.category}}</td>
+                                    <td>{{appoint.type}}</td>
+                                    <td>{{appoint.user}}</td>
+                                    <td>{{appoint.reason}}</td>
+                                    <td>{{appoint.room_number}}</td>
+                                    <td>{{appoint.teacher_comment}}</td>
+                                    
+                                    <td>
+                                       {% if appoint.is_approved == 1 %}
+                                           <span class="status-button status-approved">Approved</span>
+                                       {% elif appoint.is_approved == 0 %}
+                                           <span class="status-button status-pending">Pending</span>
+                                       {% elif appoint.is_approved == 2 %}
+                                           <span class="status-button status-on-hold">On Hold</span>
+                                       {% elif appoint.is_approved == 3 %}
+                                           <span class="status-button status-rejected">Rejected</span>
+                                       {% endif %}
+                                   </td>
+                                   
+                              
+                                    </td>
+                                 </tr>
+                              </tbody>
+                             
+                              
+                              {% endfor %}
+                           </table>
+                                   
+              </div>
+       
+          </div>
+      </div>
+      </div>
+
+      <div class="footer">
+           <div class="container">
+          <div class="row">
+              <div class="col-sm-12">
+                                                
+              </div>
+       
+          </div>
+      </div>
+      </div>
+      <br>
+
+      <div class="pagination-container">
+        <ul class="pagination"></ul>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            var table = $('.table');
+            var items = table.find('tbody tr');
+            var numRows = items.length;
+            var numPerPage = 1;
+            var numPages = Math.ceil(numRows / numPerPage);
+    
+            for (var i = 1; i <= numPages; i++) {
+                $('.pagination').append('<li><a href="#" class="page-link">' + i + '</a></li>');
+            }
+    
+            showPage(1);
+    
+            $('.pagination a').on('click', function (e) {
+                e.preventDefault();
+                var pageNum = $(this).text();
+                showPage(pageNum);
+            });
+    
+            function showPage(pageNum) {
+                var start = (pageNum - 1) * numPerPage;
+                var end = start + numPerPage;
+    
+                items.hide();
+                items.slice(start, end).show();
+    
+                $('.pagination a').removeClass('active');
+                $('.pagination li:nth-child(' + pageNum + ') a').addClass('active');
+            }
+        });
+    </script>
+
+    
+{% endblock common_teacher %}
+
+
+

@@ -1,0 +1,252 @@
+{% extends 'common_student.html' %}
+
+{% block common_student %}
+
+   <div class="student">
+           <div class="container">
+          <div class="row min-height">
+              <div class="col-sm-12">
+                             
+                            <div class="row main_boder">
+                                <div class="col-sm-7">
+                                     <h3 class="appointmnet_list">Update Appointment</h3>
+                                </div>
+                                <div class="col-sm-5">
+                                      <form class="form-inline my-2 my-lg-0" method="GET" action="">
+                                          <input class="form-control mr-sm-2" type="text" name="q" placeholder="Search Date" placeholder="Search With Name" aria-label="Search">
+                                          <button class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Search">Search</button>
+                                       </form>
+
+                                </div>
+ 
+ 
+                            </div>
+                            <br>
+
+                            <form method="POST" action="">
+                              {% csrf_token %}
+                              <div class="row" id="datepairExample">
+                                  <div class="col-2">
+                                      <select class="form-control" name="{{ form.category.name }}" id="id_{{ form.category.name }}" required>
+                                          <option value="" disabled>Select Category</option>
+                                          {% for category in unique_categories %}
+                                          <option value="{{ category }}" {% if category == existing_data.category %}selected{% endif %}>{{ category }}</option>
+                                          {% endfor %}
+                                      </select>
+                                  </div>
+                                  <div class="col-2">
+                                      <select class="form-control" name="{{ form.type.name }}" id="id_{{ form.type.name }}" required>
+                                          <option value="" disabled>Select Topic</option>
+                                          {% for topic in unique_topics %}
+                                          <option value="{{ topic }}" {% if topic == existing_data.type %}selected{% endif %}>{{ topic }}</option>
+                                          {% endfor %}
+                                      </select>
+                                  </div>
+                                  <div class="col-2">
+                                      <select class="form-control first_name" name="{{ form.first_name.name }}" id="id_{{ form.first_name.name }}" required>
+                                          <option value="{{ user.user.username }}">{{ user.user.username }}</option>
+                                      </select>
+                                  </div>
+                                  <div class="col-2">
+                                      <input type="text" class="form-control date start" name="{{form.date.name}}" required id="id_{{form.date.name}}" value="{{form.date.value}}">
+                                  </div>
+                                  <div class="col-1">
+                                      <input type="text" class="form-control time start" name="{{form.time_start.name}}" required id="id_{{form.time_start.name}}" value="{{form.time_start.value}}">
+                                  </div>
+                                  to
+                                  <div class="col-1">
+                                      <input type="text" class="form-control time end" name="{{form.time_end.name}}" required id="id_{{form.time_end.name}}" value="{{form.time_end.value}}">
+                                  </div>
+                                  <br><br>
+                                
+                                  <div class="col-4">
+                                      <input type="text" class="form-control" name="{{ form.reason.name }}" required id="id_{{ form.reason.name }}" value="{{form.reason.value}}">
+                                  </div>
+                                  <div class="col">
+                                      <button type="submit" class="btn btn-success">Update <i class="fas fa-pen-alt"></i></button>
+                                  </div>
+                              </div>
+                          </form>
+                          
+
+      <!-- Add JavaScript code to fetch and update users -->
+      <script>
+        $(document).ready(function () {
+            $("#id_{{ form.category.name }}, #id_{{ form.type.name }}").change(function () {
+                // Get selected category and topic values
+                var selectedCategory = $("#id_{{ form.category.name }}").val();
+                var selectedTopic = $("#id_{{ form.type.name }}").val();
+        
+                // Fetch users based on selected category and topic
+                $.ajax({
+                    url: "{% url 'get_filtered_users' %}",
+                    data: {
+                        category: selectedCategory,
+                        type: selectedTopic
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        var userSelect = $("#id_{{ form.first_name.name }}");
+                        userSelect.empty().append($('<option>', {
+                            value: "{{ user.user.first_name }}",
+                            text: "Select User"
+                        }));
+                        $.each(data, function (key, value) {
+                            userSelect.append($('<option>', {
+                                value: key,
+                                text: value
+                            }));
+                        });
+                    }
+                });
+            });
+            // Update the "Type" dropdown based on the selected "Category"
+            $("#id_{{ form.category.name }}").change(function () {
+                var selectedCategory = $(this).val();
+        
+                // Fetch filtered types based on the selected category
+                $.ajax({
+                    url: "{% url 'get_filtered_types' %}",
+                    data: {
+                        category: selectedCategory
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        var typeSelect = $("#id_{{ form.type.name }}");
+                        typeSelect.empty().append($('<option>', {
+                            value: "",
+                            text: "Select Topic"
+                        }));
+                        $.each(data, function (index, value) {
+                            typeSelect.append($('<option>', {
+                                value: value,
+                                text: value
+                            }));
+                        });
+                    }
+                });
+            });
+        });
+     </script>
+     <script>
+        $('#datepairExample .time').timepicker({
+          'showDuration': true,
+          'timeFormat': 'g:ia'
+        });
+        
+        $('#datepairExample .date').datepicker({
+          'format': 'd/m/yyyy',
+          'autoclose': true
+        });
+        
+        $('#datepairExample').datepair();
+     </script>
+    <script>
+      <!-- Inside the script tag for updateTeacherSlots() -->
+function updateTeacherSlots() {
+var teacherId = $("#id_{{ user.user.username }}").val();
+if (teacherId) {
+    $.ajax({
+        url: "{% url 'get_teacher_slots' teacher_id=0 %}".replace('0', teacherId),
+        dataType: "json",
+        success: function (data) {
+            // Process the available_slots and unavailable_slots data here
+            var availableSlots = data.available_slots;
+            var unavailableSlots = data.unavailable_slots;
+
+            // Enable all time inputs initially
+            $('#id_{{ form.time_start.name }}').prop('disabled', false);
+            $('#id_{{ form.time_end.name }}').prop('disabled', false);
+
+            // Disable time slots that are already booked
+            for (var i = 0; i < unavailableSlots.length; i++) {
+                var start_time = unavailableSlots[i].start_time;
+                var end_time = unavailableSlots[i].end_time;
+
+                // Find the time inputs corresponding to booked slots and disable them
+                $('input[value="' + start_time + '"]').prop('disabled', true);
+                $('input[value="' + end_time + '"]').prop('disabled', true);
+            }
+        },
+        error: function () {
+            // Handle errors
+        }
+    });
+}
+}
+
+// Bind the function to the change event of the teacher select input
+$("#id_{{ user.user.username }}").on('change', updateTeacherSlots);
+
+  </script>
+
+<br>
+<table class="table">
+  <thead>
+     <tr>
+        <th scope="col">Date</th>
+        <th scope="col">Time</th>
+        <th scope="col">Category</th>
+        <th scope="col">Topics</th>
+        <th scope="col">Faculty</th>
+        <th scope="col">Reason</th>
+        <th scope="col">Faculty Comments</th>                 
+        <th scope="col">Status</th>
+     </tr>
+  </thead>
+  {% for appoint in query %}
+  
+  <tbody>
+     <tr>
+        <td>{{appoint.date}}</td>
+        <td>{{appoint.time_start}} - {{appoint.time_end}}</td>
+        <td>{{appoint.category}}</td>
+        <td>{{appoint.type}}</td>
+        <td>{{appoint.first_name}}</td>
+        <td>{{appoint.reason}}</td>
+        <td>{{appoint.teacher_comment}}</td>
+        
+        <td>
+           {% if appoint.is_approved == 1 %}
+               <span class="status-button status-approved">Approved</span>
+           {% elif appoint.is_approved == 0 %}
+               <span class="status-button status-pending">Pending</span>
+           {% elif appoint.is_approved == 2 %}
+               <span class="status-button status-on-hold">On Hold</span>
+           {% elif appoint.is_approved == 3 %}
+               <span class="status-button status-rejected">Rejected</span>
+           {% endif %}
+       </td>
+      
+        </td>
+     </tr>
+  </tbody>
+ 
+  
+  {% endfor %}
+</table>
+                            
+
+
+              </div>
+       
+          </div>
+      </div>
+      </div>
+
+      <div class="footer">
+           <div class="container">
+          <div class="row">
+              <div class="col-sm-12">
+                                                  
+              </div>
+       
+          </div>
+      </div>
+      </div>
+
+    
+{% endblock common_student %}
+
+
+

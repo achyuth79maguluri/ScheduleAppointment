@@ -1,0 +1,170 @@
+{% extends 'common.html' %}
+
+{% block body %}
+<br><br>
+<div class="register_student">
+    <div class="container height">
+        <div class="row">
+            <div class="col-md-6 offset-md-3">
+                {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        <strong>Message:</strong> {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+                <h2 class="Login">Sign Up for Student Account</h2><br>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="far fa-user"></i></span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Username" id="username" name="username" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+
+                    <div id="username-error-message" class="text-danger"></div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-file-signature"></i></span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="First Name" name="first_name" aria-label="First Name" aria-describedby="basic-addon1">
+                    </div>
+
+                    <!-- Add Last Name field here -->
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-file-signature"></i></span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Last Name" name="last_name" aria-label="Last Name" aria-describedby="basic-addon1">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="far fa-id-badge"></i></span>
+                        </div>
+                        <input type="email" class="form-control" placeholder="Student Email" id="email" name="email" aria-label="email" aria-describedby="basic-addon1">
+                    </div>
+
+                    <div id="email-error-message" class="text-danger"></div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="far fa-id-badge"></i></span>
+                        </div>
+                        <input type="number" class="form-control" placeholder="Student id" id="student_number" name="student_number" aria-label="number" aria-describedby="basic-addon1">
+                    </div>
+
+                    <div id="student_number-error-message" class="text-danger"></div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">*</span>
+                        </div>
+                        <input type="password" class="form-control" placeholder="Password" name="password" aria-label="pass" aria-describedby="basic-addon1">
+                        <input type="password" class="form-control" placeholder="Repeat Password" name="repeat_password" aria-label="repeat_pass" aria-describedby="basic-addon1">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input type="submit" class="form-control submit" value="Submit" aria-label="submit" aria-describedby="basic-addon1" style="background-color: #1566d6; color: white;">
+                    </div>
+                </form>
+                <a class="regi" href="http://127.0.0.1:8000">Back To Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $("#username").on('input', function () {
+            var username = $(this).val();
+
+            // Check username availability
+            $.ajax({
+                url: "{% url 'check_username_availability' %}",
+                method: "POST",
+                data: {
+                    'username': username,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data.is_taken) {
+                        // Show a dynamic message near the username field
+                        $("#username-error-message").text("Username already exists. Please choose another one.");
+                    } else {
+                        $("#username-error-message").text("");  // Clear the error message if the username is available
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('Error:', xhr.responseText);
+                    alert('An error occurred while checking username availability. Please check the console for details.');
+                }
+            });
+        });
+
+        // Add an event listener for form submission
+        $("#registrationForm").submit(function (event) {
+            var errorMessage = $("#username-error-message").text();
+            if (errorMessage) {
+                // If there's an error message, prevent the form submission
+                event.preventDefault();
+                // Show a modal with the error message
+                $("#messageModal .modal-body").html(errorMessage);
+                $("#messageModal").modal('show');
+            }
+        });
+    });
+</script>
+<script>
+    function checkFieldAvailability(fieldId, checkUrl, errorMessageId) {
+        $(document).on('blur', fieldId, function () {
+            var fieldValue = $(this).val();
+
+            // Check field availability
+            $.ajax({
+                url: checkUrl,
+                method: "POST",
+                data: {
+                    [fieldId.replace("#", "")]: fieldValue,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    if (data.is_taken) {
+                        // Show a dynamic message near the field
+                        $(errorMessageId).text(data.message);
+                    } else {
+                        $(errorMessageId).text("");  // Clear the error message if the field is available
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.log('Error:', xhr.responseText);
+                    alert(`An error occurred while checking ${fieldId} availability. Please check the console for details.`);
+                }
+            });
+        });
+    }
+
+    $(document).ready(function () {
+        checkFieldAvailability("#email", "{% url 'check_email_availability' %}", "#email-error-message");
+        checkFieldAvailability("#student_number", "{% url 'check_student_number_availability' %}", "#student_number-error-message");
+
+        // Add an event listener for form submission
+        $("#registrationForm").submit(function (event) {
+            // Check each field for error messages
+            var errorMessages = [];
+            errorMessages.push($("#email-error-message").text());
+            errorMessages.push($("#student_number-error-message").text());
+
+            // If any error messages exist, prevent the form submission and show a modal
+            if (errorMessages.some(message => message)) {
+                event.preventDefault();
+                $("#messageModal .modal-body").html(errorMessages.join('<br>'));
+                $("#messageModal").modal('show');
+            }
+        });
+    });
+</script>
+
+{% endblock %}

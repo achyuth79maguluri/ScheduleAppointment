@@ -1,0 +1,69 @@
+{% extends 'common.html' %}
+
+{% block body %}
+<div class="header-container">
+   <div class="container ">
+   	<div class="row studnet_nav">
+   	             <div class="col-sm-8">            
+						     <ul class="nav nav-pills">
+								  <li class="nav-item">
+								    <a class="nav-link" href='{% url "student_home"%}'>My Appointments</a>
+								  </li>
+								  <li class="nav-item">
+								    <a class="nav-link" href='{% url "student_appointment_list"%}'>Create Appointment</a>
+								  </li>
+							  </ul>	                             
+                  </div>
+
+                 <div class="col-sm-4">
+					     <ul class="nav nav-pills">
+							  <li class="nav-item">
+							    
+							  </li>
+							  <li class="nav-item">
+							    <a class="nav-link" href="#"><p class="welcome">Welcome</p> {{user_name}}</a>
+							  </li>
+							  <li class="nav-item">
+							    <a class="nav-link" href='{% url "logout"%}'>Log Out</a>
+							  </li>
+						  </ul>	     
+	       		 </div>
+	  </div>
+    </div>
+</div>
+	<br>
+	<style>p.welcome {
+		display: inline; /* or display: inline-block; depending on your desired styling */
+		margin-right: 5px; /* Add a small margin to separate "Welcome" and the username */
+	}
+	</style>
+	<style>
+		.header-container {
+			background-color: #283242; /* Set your desired background color */
+			padding: 10px 0; /* Add padding as needed */
+		}
+	
+		.nav-pills .nav-item {
+			margin-right: 10px; /* Adjust the margin between navigation items as needed */
+		}
+	
+		.nav-pills .nav-link {
+			color: #fff; /* Set the text color for navigation links */
+		}
+	
+		.nav-pills .nav-link:hover {
+			color: #f2f2f2; /* Set the text color on hover for navigation links */
+		}
+	
+		.welcome {
+			display: inline;
+			margin-right: 5px;
+			color: #fff; /* Set the text color for the welcome message */
+		}
+	</style>
+
+    {% block common_student %}
+    
+    {% endblock common_student %}
+
+{% endblock %}

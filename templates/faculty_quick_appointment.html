@@ -1,0 +1,264 @@
+{% extends 'common_teacher.html' %}
+
+{% block common_teacher %}
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+<div class="student">
+    <div class="container">
+        <div class="row min-height">
+            <div class="col-sm-12">
+                <div class="row main_boder">
+                    <div class="col-sm-7">
+                        <h3 class="appointmnet_list">Approve Appointments</h3>
+                    </div>
+                    <form class="form-inline my-2 my-lg-0" method="GET" action="">
+                        <input type="hidden" name="teacher_name" value="{{ user_name }}">
+                        <input class="form-control mr-sm-2" type="text" name="q" placeholder="Search By Date" aria-label="Search">
+                        <button class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Search">Search</button>
+                    </form>
+                 
+                    <!-- Update the loop to display students who have created appointments with the teacher -->
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Student Name</th>
+                                <th scope="col">Student Mail</th>
+                                <th scope="col">Student Id</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Timings</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Topics</th>
+                                <th scope="col">Reason</th>
+                                <th scope="col">Room No & Place</th>
+                                <th scope="col">Update Room No. & Place</th><br>
+                                <th scope="col">Comment</th>
+                                <th scope="col">Update Comment</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Action</th>
+                                <th scope="col"></th>
+                                
+                              
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for appoint in query %}
+                            <tr>
+                                <th scope="row">{{ appoint.user }}</th>
+                                <th scope="row">{{ appoint.email }}</th>
+                                <th scope="row">{{ appoint.student_number }}</th>
+                                <td>{{ appoint.date }}</td>
+                                <td>{{ appoint.time_start }} - {{ appoint.time_end }}</td>
+                                <td>{{ appoint.category }}</td>
+                                <td>{{ appoint.type }}</td>
+                                <td>{{ appoint.reason }}</td>
+                                <td>{{ appoint.room_number }}</td>
+                                <td>
+                                                                        
+                                    <form id="room-form_{{ appoint.id }}">
+                                       
+                                        <input type="text" id="teacher_room_{{ appoint.id }}"  placeholder="Update Room No. & Place...">
+                                        <button type="button" class="button button2 submit-room-btn" 
+                                            data-appointment-id="{{ appoint.id }}">Update Room No. & Place</button>
+                                </form>
+                                </td>
+                          
+
+                            <td><p>{{ appoint.teacher_comment }}</p></td>
+                            <td>
+                                <!-- Add the teacher_comment input field outside the form -->
+                                <form id="comment-form_{{ appoint.id }}">
+                                    <textarea name="teacher_comment" id="teacher_comment_{{ appoint.id }}"
+                                        placeholder="Add your comment..."></textarea>
+                                    <button type="button" class="button button3 submit-comment-btn" 
+                                            data-appointment-id="{{ appoint.id }}">Submit Comment</button>
+                                </form>
+                              
+                            </td>
+                                <td>
+                                    {% if appoint.is_approved == 1 %}
+                                    <span class="status-button status-approved">Approved</span>
+                                    {% elif appoint.is_approved == 0 %}
+                                    <span class="status-button status-pending">Pending</span>
+                                    {% elif appoint.is_approved == 2 %}
+                                    <span class="status-button status-on-hold">On Hold</span>
+                                    {% elif appoint.is_approved == 3 %}
+                                    <span class="status-button status-rejected">Rejected</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <form method="post" class="status-form">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="appointment_id" value="{{ appoint.id }}">
+                                        <select name="status" class="custom-select">
+                                            <option value="" disabled selected>Select Status</option>
+                                            <option value="0">Pending</option>
+                                            <option value="1">Approved</option>
+                                            <option value="2">On-Hold</option>
+                                            <option value="3">Reject</option>
+                                        </select>
+                                        <td><input type="submit" class="button button5" value="Update Status"></td>
+                                    </form>
+                                </td>
+                               
+                      
+                            
+                        </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+               
+            </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="pagination-container">
+    <ul class="pagination"></ul>
+</div>
+
+<div class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<script>
+    $(document).ready(function () {
+        var table = $('.table');
+        var items = table.find('tbody tr');
+        var numRows = items.length;
+        var numPerPage = 1;
+        var numPages = Math.ceil(numRows / numPerPage);
+
+        for (var i = 1; i <= numPages; i++) {
+            $('.pagination').append('<li><a href="#" class="page-link">' + i + '</a></li>');
+        }
+
+        showPage(1);
+
+        $('.pagination a').on('click', function (e) {
+            e.preventDefault();
+            var pageNum = $(this).text();
+            showPage(pageNum);
+        });
+
+        function showPage(pageNum) {
+            var start = (pageNum - 1) * numPerPage;
+            var end = start + numPerPage;
+
+            items.hide();
+            items.slice(start, end).show();
+
+            $('.pagination a').removeClass('active');
+            $('.pagination li:nth-child(' + pageNum + ') a').addClass('active');
+        }
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $(".status-form").submit(function (event) {
+            event.preventDefault();
+
+            var form = $(this);
+            var appointmentId = form.find("input[name='appointment_id']").val();
+
+            $.ajax({
+                url: "{% url 'update_appointment_status' 0 %}".replace('0', appointmentId),
+                method: "POST",
+                data: form.serialize(),
+                dataType: "json",
+                success: function (data) {
+                    if (data.success) {
+                        // Provide feedback to the user (e.g., change the UI to reflect the new status)
+                        alert("Status updated successfully!");
+                        // Reload the page
+                        location.reload();
+                    } else {
+                        alert("Failed to update the status.");
+                    }
+                },
+                error: function () {
+                    alert("An error occurred while updating the status.");
+                }
+            });
+        });
+    });
+
+    // Attach a click event handler to the "Submit Comment" button for each comment form
+    
+    $(document).ready(function () {
+        $(".submit-comment-btn").click(function () {
+            var appointmentId = $(this).data('appointment-id');
+            var comment = $("#teacher_comment_" + appointmentId).val();
+
+            // Make an AJAX request to submit the comment
+            $.ajax({
+                url: "{% url 'update_teacher_comment' 0 %}".replace('0', appointmentId),
+                method: "POST",
+                data: {
+                    comment: comment,
+                    csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data.success) {
+                        // Comment was successfully submitted
+                        alert("Comment submitted successfully.");
+                        // Clear the textarea
+                        $("#teacher_comment_" + appointmentId).val('');
+                        // Reload the page
+                        location.reload();
+                    } else {
+                        // Comment submission failed
+                        alert("Failed to submit the comment.");
+                    }
+                },
+                error: function () {
+                    // An error occurred during the submission
+                    alert("An error occurred while submitting the comment.");
+                }
+            });
+        });
+    });
+
+    $(document).ready(function () {
+        $(".submit-room-btn").click(function () {
+            var appointmentId = $(this).data('appointment-id');
+            var room = $("#teacher_room_" + appointmentId).val();
+
+            // Make an AJAX request to submit the room
+            $.ajax({
+                url: "{% url 'update_teacher_room' 0 %}".replace('0', appointmentId),
+                method: "POST",
+                data: {
+                    room: room,
+                    csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val(),
+                },
+                dataType: "json",
+                success: function (data) {
+                    if (data.success) {
+                        // room was successfully submitted
+                        alert("Room & Place submitted successfully.");
+                        // Clear the textarea
+                        $("#teacher_room_" + appointmentId).val('');
+                        // Reload the page
+                        location.reload();
+                    } else {
+                        // Room & Place submission failed
+                        alert("Failed to submit the Room & Place.");
+                    }
+                },
+                error: function () {
+                    // An error occurred during the submission
+                    alert("An error occurred while submitting the Room & Place.");
+                }
+            });
+        });
+    });
+</script>
+</div>
+{% endblock common_teacher %}

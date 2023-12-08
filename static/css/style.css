@@ -1,0 +1,132 @@
+/* Define styles for status buttons */
+.status-button {
+    display: inline-block;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    margin: 4px 2px;
+}
+
+.status-approved {
+    background-color: #04AA6D;
+    color: white;
+}
+
+.status-pending {
+    background-color: gray;
+    color: white;
+}
+
+.status-on-hold {
+    background-color: #d4db07;
+    color: white;
+}
+
+.status-rejected {
+    background-color: #eb0248;
+    color: white;
+}
+
+/* Style the custom-select */
+.custom-select {
+    display: block;
+    width: 100%;
+    height: calc(2.25rem + 2px);
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.col-sm-7 {
+    margin-left: 120px; /* Adjust the left margin as needed */
+}
+
+.appointmnet_list {
+    margin-left: -100px; /* Adjust the left margin as needed */
+}
+
+/* Table styles */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 40px; /* Add margin for better spacing */
+    margin-left: -310px;
+}
+
+tr {
+    border: 2px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.right-align {
+    text-align: right;
+}
+
+/* Additional button styles */
+.button {
+    background-color: #04AA6D; /* Green */
+    border: none;
+    color: white;
+    padding: 15px 3px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 14px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.custom-select {
+    width: 130px; /* Adjust the width as needed */
+}
+
+.button2 {background-color: #008CBA;} /* Blue */
+.button3 {background-color: #f5425d;} /* Red */ 
+.button4 {background-color: #e7e7e7; color: black;} /* Gray */ 
+.button5 {background-color: #0d9aff;} /* Black */
+
+.pagination-container {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination li {
+    margin-right: 5px;
+}
+
+.pagination a {
+    text-decoration: none;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    color: #333;
+    cursor: pointer;
+}
+
+.pagination a.active {
+    background-color: #3498db;
+    color: #fff;
+}

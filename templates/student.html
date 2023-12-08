@@ -1,0 +1,133 @@
+{% extends 'common_student.html' %}
+
+{% block common_student %}
+
+   <div class="student">
+           <div class="container">
+          <div class="row min-height">
+              <div class="col-sm-12">
+                             
+                            <div class="row main_boder">
+                                <div class="col-sm-7">
+                                     <h3 class="appointmnet_list">My Appointments</h3>
+                                </div>
+                                <div class="col-sm-5">
+                                      <form class="form-inline my-2 my-lg-0" method="GET" action="">
+                                          <input class="form-control mr-sm-2" type="text" name="q" placeholder="Search By Appointment With" placeholder="Search With Name" aria-label="Search">
+                                          <button class="btn btn-outline-success my-2 my-sm-0" type="submit" value="Search">Search</button>
+                                       </form>
+                                </div>
+ 
+                            </div>
+                            <br>
+                             
+                            <table class="table">
+                              <thead>
+                                 <tr>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Time</th>
+                                    <th scope="col">Category</th>
+                                    <th scope="col">Topics</th>
+                                    <th scope="col">Appointment With</th>
+                                    <th scope="col">Reason</th>
+                                    <th scope="col">Room No. & Place</th>
+                                    <th scope="col">Faculty Comments</th>                  
+                                    <th scope="col">Status</th>
+                                 </tr>
+                              </thead>
+                              {% for appoint in query %}
+                              
+                              <tbody>
+                                 <tr>
+                                    <td>{{appoint.date}}</td>
+                                    <td>{{appoint.time_start}} - {{appoint.time_end}}</td>
+                                    <td>{{appoint.category}}</td>
+                                    <td>{{appoint.type}}</td>
+                                    <td>{{appoint.first_name}}</td>
+                                    <td>{{appoint.reason}}</td>
+                                    <td>{{appoint.room_number}}</td>
+                                    <td>{{appoint.teacher_comment}}</td>
+                                    
+                                    <td>
+                                       {% if appoint.is_approved == 1 %}
+                                           <span class="status-button status-approved">Approved</span>
+                                       {% elif appoint.is_approved == 0 %}
+                                           <span class="status-button status-pending">Pending</span>
+                                       {% elif appoint.is_approved == 2 %}
+                                           <span class="status-button status-on-hold">On Hold</span>
+                                       {% elif appoint.is_approved == 3 %}
+                                           <span class="status-button status-rejected">Rejected</span>
+                                       {% endif %}
+                                   </td>
+                                   
+                              
+                                    </td>
+                                 </tr>
+                              </tbody>
+                             
+                              
+                              {% endfor %}
+                           </table>
+                                                                                             
+              </div>
+       
+          </div>
+      </div>
+      </div>
+      <style>
+        /* Define styles for status buttons */
+        .status-button {
+            display: inline-block;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            margin: 4px 2px;
+        }
+     
+        .status-approved {
+         background-color: #04AA6D;
+         color: white;
+     }
+     
+     .status-pending {
+         background-color: gray;
+         color: white;
+     }
+     
+     .status-on-hold {
+         background-color: #d4db07;
+         color: white;
+     }
+     
+     .status-rejected {
+         background-color: #eb0248;
+         color: white;
+     }
+        .custom-blue-btn {
+             background-color: #1266e3;
+             color: white;
+         }
+     </style>
+
+      <div class="footer">
+           <div class="container">
+          <div class="row">
+              <div class="col-sm-12">
+                                                 
+              </div>
+       
+          </div>
+      </div>
+      </div>
+
+
+
+    
+{% endblock common_student %}
+
+
+

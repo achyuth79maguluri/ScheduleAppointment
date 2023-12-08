@@ -1,0 +1,217 @@
+{% extends 'common.html' %}
+
+{% block body %}
+<br>
+<br>
+<div class="register_teacher">
+    <div class="container height">
+        <div class="row">
+            <div class="col-sm-6 offset-md-3">
+                <h2 class="Login">Sign Up for Faculty Account</h2><br>
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="far fa-user"></i></span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Username" id="username" name="username" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+
+                    <div id="username-error-message" class="text-danger"></div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-file-signature"></i></span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="First Name" name="first_name" aria-label="First Name" aria-describedby="basic-addon1">
+                    </div>
+
+                    <!-- Add Last Name field here -->
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-file-signature"></i></span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Last Name" name="last_name" aria-label="Last Name" aria-describedby="basic-addon1">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-envelope"></i></span>
+                        </div>
+                        <input type="email" class="form-control" placeholder="Email" id="email" name="email" aria-label="Email" aria-describedby="basic-addon1">
+                    </div>
+
+                    <div id="email-error-message" class="text-danger"></div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-mobile-alt"></i></span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Mobile" id="mobile" name="mobile" aria-label="Mobile" aria-describedby="basic-addon1">
+                    </div>
+
+                    <div id="mobile-error-message" class="text-danger"></div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-sitemap"></i></span>
+                        </div>
+                        <select class="form-control" id="category" name="category" aria-label="Category" aria-describedby="basic-addon1">
+                            <option value="">Select Category</option>
+                            <option value="Math">Math</option>
+                            <option value="Physics">Physics</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-cog"></i></span>
+                        </div>
+                        <select class="form-control" id="type" name="type" aria-label="Type" aria-describedby="basic-addon1">
+                            <option value="">Select Type</option>
+                        </select>
+                    </div>              
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"><i class="fas fa-map-marker-alt"></i></span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Location" name="location" aria-label="Location" aria-describedby="basic-addon1">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">*</span>
+                        </div>
+                        <input type="password" class="form-control" placeholder="Password" name="password" aria-label="password" aria-describedby="basic-addon1">
+                        <input type="password" class="form-control" placeholder="Repeat Password" name="repeat_password" aria-label="repeat_password" aria-describedby="basic-addon1">
+                    </div>
+
+                    <div class="input-group mb-3">
+                        <input type="submit" class="form-control submit" value="Submit" aria-label="submit" aria-describedby="basic-addon1" style="background-color: #1566d6; color: white;">
+                    </div>
+                    
+                </form>
+                <a class="regi" href="http://127.0.0.1:8000">Back To Login</a>
+            </div>
+        </div>
+    </div>
+	<script>
+		// Dummy data: Subjects and their related topics
+		const subjectTopics = {
+			Math: ["Algebra", "Calculus", "Geometry"],
+			Physics: ["Mechanics", "Thermodynamics", "Electromagnetism"],
+		};
+	
+		const categorySelect = document.getElementById("category");
+		const typeSelect = document.getElementById("type");
+	
+		// Event listener for the Category dropdown
+		categorySelect.addEventListener("change", function () {
+			const selectedCategory = categorySelect.value;
+			const topics = subjectTopics[selectedCategory] || [];
+	
+			// Clear the Type dropdown
+			typeSelect.innerHTML = "<option value=''>Select Type</option>";
+	
+			// Populate the Type dropdown with related topics
+			topics.forEach((topic) => {
+				const option = document.createElement("option");
+				option.value = topic;
+				option.textContent = topic;
+				typeSelect.appendChild(option);
+			});
+		});
+	</script>
+    <script>
+        $(document).ready(function () {
+            $("#username").on('input', function () {
+                var username = $(this).val();
+    
+                // Check username availability
+                $.ajax({
+                    url: "{% url 'check_username_availability' %}",
+                    method: "POST",
+                    data: {
+                        'username': username,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+                        if (data.is_taken) {
+                            // Show a dynamic message near the username field
+                            $("#username-error-message").text("Username already exists. Please choose another one.");
+                        } else {
+                            $("#username-error-message").text("");  // Clear the error message if the username is available
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log('Error:', xhr.responseText);
+                        alert('An error occurred while checking username availability. Please check the console for details.');
+                    }
+                });
+            });
+    
+            // Add an event listener for form submission
+            $("#registrationForm").submit(function (event) {
+                var errorMessage = $("#username-error-message").text();
+                if (errorMessage) {
+                    // If there's an error message, prevent the form submission
+                    event.preventDefault();
+                    // Show a modal with the error message
+                    $("#messageModal .modal-body").html(errorMessage);
+                    $("#messageModal").modal('show');
+                }
+            });
+        });
+    </script>
+
+    <script>
+        function checkFieldAvailability(fieldId, checkUrl, errorMessageId) {
+            $(document).on('blur', fieldId, function () {
+                var fieldValue = $(this).val();
+    
+                // Check field availability
+                $.ajax({
+                    url: checkUrl,
+                    method: "POST",
+                    data: {
+                        [fieldId.replace("#", "")]: fieldValue,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    success: function (data) {
+                        if (data.is_taken) {
+                            // Show a dynamic message near the field
+                            $(errorMessageId).text(data.message);
+                        } else {
+                            $(errorMessageId).text("");  // Clear the error message if the field is available
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log('Error:', xhr.responseText);
+                        alert(`An error occurred while checking ${fieldId} availability. Please check the console for details.`);
+                    }
+                });
+            });
+        }
+    
+        $(document).ready(function () {
+            checkFieldAvailability("#email", "{% url 'check_email_availability' %}", "#email-error-message");
+            checkFieldAvailability("#mobile", "{% url 'check_mobile_availability' %}", "#mobile-error-message");
+    
+            // Add an event listener for form submission
+            $("#registrationForm").submit(function (event) {
+                // Check each field for error messages
+                var errorMessages = [];
+                errorMessages.push($("#email-error-message").text());
+                errorMessages.push($("#mobile-error-message").text());
+    
+                // If any error messages exist, prevent the form submission and show a modal
+                if (errorMessages.some(message => message)) {
+                    event.preventDefault();
+                    $("#messageModal .modal-body").html(errorMessages.join('<br>'));
+                    $("#messageModal").modal('show');
+                }
+            });
+        });
+    </script>
+{% endblock %}
